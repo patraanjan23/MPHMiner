@@ -1,0 +1,7 @@
+cryptonight
+cryptolight
+myr-gr
+lbry
+lyra2v2
+skein
+neoscrypt

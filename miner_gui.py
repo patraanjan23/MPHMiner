@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtWidgets, QtCore, QtGui
 
-from gui.miner_gui import Ui_Form
+from miner_form import Ui_Form
 
 
 # ic_close = QtGui.QIcon("../icons/close.png")
@@ -14,7 +14,7 @@ class Miner(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
         # Vars
         self.clicked_pt = None
