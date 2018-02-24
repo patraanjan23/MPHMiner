@@ -1,5 +1,6 @@
 import re
 import sys
+from os import name as OS_NAME
 from pathlib import Path
 
 from PyQt5 import QtCore, QtWidgets
@@ -23,6 +24,8 @@ class BenchmarkV2:
         self.duration = duration * 1000
         self.backup_dir = "backup"
         self.binary = "./bin/ccminer_linux"
+        if OS_NAME == "nt":
+            self.binary = "bin/ccminer.exe"
         self.params = "--benchmark --no-color"
         self.regex = re.compile(r"Total:\s\d*\.\d*\s[kMGT]?H/s")
 
@@ -63,9 +66,10 @@ class BenchmarkV2:
             print("starting benchmark")
             self.current_algo = algo
             env = QtCore.QProcessEnvironment.systemEnvironment()
-            env.insert("LD_LIBRARY_PATH", "$LD_LIBRARY_PATH:/usr/local/cuda/lib64")
+            if OS_NAME == "posix":
+                env.insert("LD_LIBRARY_PATH", "$LD_LIBRARY_PATH:/usr/local/cuda/lib64")
             self.process.setProcessEnvironment(env)
-            self.process.start("./ccminer_linux", self.make_param(algo))
+            self.process.start(self.binary, self.make_param(algo))
             self.timer.start(self.duration)
         pass
 
@@ -98,7 +102,11 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
             }
         self.duration = duration * 1000
         self.backup_dir = "backup"
-        self.binary = "./bin/ccminer_linux"
+        self.binary = "./bin/ccminer.exe"
+        self.insert_env = False
+        if OS_NAME == "posix":
+            self.binary = "./bin/ccminer_linux"
+            self.insert_env = True
         self.params = "--benchmark --no-color"
         self.regex = re.compile(r'Total:\s\d*\.\d*\s[kMGT]?H/s')
 
@@ -152,18 +160,19 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
             self.current_algo = algo
 
             # set environment variables for ccminer linux
-            env = QtCore.QProcessEnvironment.systemEnvironment()
-            env.insert("LD_LIBRARY_PATH", "$LD_LIBRARY_PATH:/usr/local/cuda/lib64")
-            self.process.setProcessEnvironment(env)
+            if self.insert_env:
+                env = QtCore.QProcessEnvironment.systemEnvironment()
+                env.insert("LD_LIBRARY_PATH", "$LD_LIBRARY_PATH:/usr/local/cuda/lib64")
+                self.process.setProcessEnvironment(env)
 
             # start the process with timer
-            self.process.start("./ccminer_linux", self.make_param(self.current_algo))
+            self.process.start(self.binary, self.make_param(self.current_algo))
             self.timer.start(self.duration)
         pass
 
     def terminate_benchmark(self):
         print("terminated")
-        self.process.terminate()
+        self.process.kill()
         self.timer.stop()
 
     def make_param(self, algo: str):
@@ -174,6 +183,6 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    btn = BenchmarkGui(["skein", "lyra2v2", "cryptonight", "cryptolight"])
+    btn = BenchmarkGui(["skein", "lyra2v2", "cryptolight"])
     btn.show()
     sys.exit(app.exec_())
