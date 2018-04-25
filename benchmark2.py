@@ -89,6 +89,7 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
                  algorithms_file="algorithms.txt"):
         super(BenchmarkGui, self).__init__()
         self.setupUi(self)
+        self.setMinimumSize(320, 480)
 
         self.algorithms_file = Path(algorithms_file)
         self.benchmark_file = Path(benchmark_file)
@@ -117,11 +118,28 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
         self.timer.timeout.connect(self.terminate_benchmark)
         self.process.readyReadStandardOutput.connect(self.benchmark_solo)
 
+        # set duration
+        self.btnDuration.clicked.connect(self.set_duration)
+
+        # progress bar
+        self.progressBar.setMinimum(0)
+        self.progressBar.setMaximum(self.duration)
+
         for algo in self.algorithms:
             button = QtWidgets.QPushButton(algo)
             button.clicked.connect(self.benchmark_solo)
             self.btnGrid.addWidget(button)
             self.lblGrid.addWidget(QtWidgets.QLabel(button.text()))
+
+    def set_duration(self):
+        text = self.editDuration.text()
+        try:
+            # set duration and max for progress bar
+            self.duration = float(text) * 1000
+            self.progressBar.setMaximum(self.duration)
+        except TypeError as e:
+            print("wrong type")
+        pass
 
     def check_btns(self):
         print(self.sender().text())
@@ -129,6 +147,7 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
     def benchmark_solo(self):
         debug = True
         if self.timer.isActive():
+
             text = self.process.readAllStandardOutput().data().decode("utf-8").rstrip()
             match = self.regex.search(text)
             if match:
@@ -148,8 +167,8 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
                 if debug:
                     print("BM_STRING: {}\nHR: {}\nUNIT: {}".format(bm_string, hr, unit))
                     print(self.algorithms[self.current_algo])
-
                 pass
+            self.progressBar.setValue(self.duration - self.timer.remainingTime())
 
         else:
             # get the algo from the btn pressed
@@ -168,9 +187,16 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
             # start the process with timer
             self.process.start(self.binary, self.make_param(self.current_algo))
             self.timer.start(self.duration)
+
+            # reset progress bar
+            self.progressBar.setValue(0)
         pass
 
     def terminate_benchmark(self):
+        # set progress to 100 when terminate
+        self.progressBar.setValue(self.progressBar.maximum())
+
+        # actually terminate
         print("terminated")
         self.process.kill()
         self.timer.stop()
