@@ -85,6 +85,9 @@ class BenchmarkV2:
 
 
 class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
+    benchmark_terminated = QtCore.pyqtSignal()
+    start_benchmark = QtCore.pyqtSignal()
+
     def __init__(self, algorithms: list, duration=60, benchmark_file="benchmark.txt",
                  algorithms_file="algorithms.txt"):
         super(BenchmarkGui, self).__init__()
@@ -97,9 +100,11 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
         self.current_algo = ""
         for algo in algorithms:
             self.algorithms[algo] = {
+                "enabled": True,
                 "samples": [],
                 "hashrate": 0,
-                "unit": None
+                "unit": None,
+                "benchmarked": False
             }
         self.duration = duration * 1000
         self.backup_dir = "backup"
@@ -125,11 +130,45 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
         self.progressBar.setMinimum(0)
         self.progressBar.setMaximum(self.duration)
 
+        # new layout using checkbox
+        self.enabled_algos = 0
+        self.wait_duration = 1000
+        self.wait_timer = QtCore.QTimer()
+        self.wait_timer.setSingleShot(True)
+        self.big_timer = QtCore.QTimer()
+        self.big_timer.setSingleShot(True)
+
+        self.btnBenchAgain.hide()
+
+        self.big_timer.timeout.connect(self.start_bench)
+        self.btnBenchmark.clicked.connect(self.benchmark_multi)
+        self.btnBenchAgain.clicked.connect(self.reset_benchmark)
+        self.start_benchmark.connect(self.benchmark_multi)
+
         for algo in self.algorithms:
-            button = QtWidgets.QPushButton(algo)
-            button.clicked.connect(self.benchmark_solo)
-            self.btnGrid.addWidget(button)
-            self.lblGrid.addWidget(QtWidgets.QLabel(button.text()))
+            cb = QtWidgets.QCheckBox(algo)
+            cb.stateChanged.connect(self.add_remove_algorithm)
+            if self.algorithms[algo]["enabled"]:
+                cb.setChecked(True)
+            self.checkboxLayout.addWidget(cb)
+
+        # for algo in self.algorithms:
+        #     button = QtWidgets.QPushButton(algo)
+        #     button.clicked.connect(self.benchmark_solo)
+        #     self.btnGrid.addWidget(button)
+        #     self.lblGrid.addWidget(QtWidgets.QLabel(button.text()))
+
+    def add_remove_algorithm(self):
+        debug = True
+        cb = self.sender()
+        if cb.isChecked():
+            self.enabled_algos += 1
+            self.algorithms[cb.text()]["enabled"] = True
+        else:
+            self.enabled_algos -= 1
+            self.algorithms[cb.text()]["enabled"] = False
+        if debug:
+            print(self.algorithms)
 
     def set_duration(self):
         text = self.editDuration.text()
@@ -192,13 +231,47 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
             self.progressBar.setValue(0)
         pass
 
+    def reset_benchmark(self):
+        for algo in self.algorithms:
+            if self.algorithms[algo]["enabled"]:
+                self.algorithms[algo]["benchmarked"] = False
+
+        self.benchmark_multi()
+
+    def benchmark_multi(self):
+        debug = True
+
+        if self.big_timer.isActive():
+            pass
+        else:
+            print("running in bg")
+            for algo in self.algorithms:
+                if self.algorithms[algo]["enabled"] and not self.algorithms[algo]["benchmarked"]:
+                    big_duration = self.duration + 5000  # self.enabled_algos * (self.duration * 1000 + self.wait_duration)
+                    self.big_timer.start(big_duration)
+                    btn = QtWidgets.QPushButton(algo)
+                    btn.clicked.connect(self.benchmark_solo)
+                    self.algorithms[algo]["benchmarked"] = True
+                    btn.click()
+                    self.btnBenchmark.hide()
+                    self.btnBenchAgain.show()
+                    break
+
+    def start_bench(self):
+        print("reached here")
+        self.big_timer.stop()
+        self.start_benchmark.emit()
+
     def terminate_benchmark(self):
         # set progress to 100 when terminate
         self.progressBar.setValue(self.progressBar.maximum())
 
         # actually terminate
         print("terminated")
-        self.process.kill()
+        if OS_NAME == "posix":
+            self.process.terminate()
+        else:
+            self.process.kill()
         self.timer.stop()
 
     def make_param(self, algo: str):

@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -16,6 +16,9 @@ class Ui_Form(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label = QtWidgets.QLabel(Form)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
         self.editDuration = QtWidgets.QLineEdit(Form)
         self.editDuration.setObjectName("editDuration")
         self.horizontalLayout.addWidget(self.editDuration)
@@ -23,18 +26,33 @@ class Ui_Form(object):
         self.btnDuration.setObjectName("btnDuration")
         self.horizontalLayout.addWidget(self.btnDuration)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.progressBar = QtWidgets.QProgressBar(Form)
-        self.progressBar.setProperty("value", 24)
-        self.progressBar.setObjectName("progressBar")
-        self.verticalLayout.addWidget(self.progressBar)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout.addItem(spacerItem)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.checkboxLayout = QtWidgets.QVBoxLayout()
+        self.checkboxLayout.setObjectName("checkboxLayout")
+        self.horizontalLayout_2.addLayout(self.checkboxLayout)
+        self.labelLayout = QtWidgets.QVBoxLayout()
+        self.labelLayout.setObjectName("labelLayout")
+        self.horizontalLayout_2.addLayout(self.labelLayout)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.lblGrid = QtWidgets.QGridLayout()
         self.lblGrid.setObjectName("lblGrid")
         self.verticalLayout.addLayout(self.lblGrid)
         self.btnGrid = QtWidgets.QGridLayout()
         self.btnGrid.setObjectName("btnGrid")
         self.verticalLayout.addLayout(self.btnGrid)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
+        self.btnBenchmark = QtWidgets.QPushButton(Form)
+        self.btnBenchmark.setObjectName("btnBenchmark")
+        self.verticalLayout.addWidget(self.btnBenchmark)
+        self.btnBenchAgain = QtWidgets.QPushButton(Form)
+        self.btnBenchAgain.setObjectName("btnBenchAgain")
+        self.verticalLayout.addWidget(self.btnBenchAgain)
+        self.progressBar = QtWidgets.QProgressBar(Form)
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setObjectName("progressBar")
+        self.verticalLayout.addWidget(self.progressBar)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -42,7 +60,9 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
+        self.label.setText(_translate("Form", "Duration"))
         self.editDuration.setToolTip(_translate("Form", "Duration"))
         self.editDuration.setWhatsThis(_translate("Form", "Duration"))
         self.btnDuration.setText(_translate("Form", "Set"))
-
+        self.btnBenchmark.setText(_translate("Form", "Benchmark"))
+        self.btnBenchAgain.setText(_translate("Form", "Benchmark"))

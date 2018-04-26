@@ -17,15 +17,22 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="editDuration">
-       <property name="toolTip">
-        <string>Duration</string>
-       </property>
-       <property name="whatsThis">
-        <string>Duration</string>
-       </property>
-      </widget>
+         <widget class="QLabel" name="label">
+             <property name="text">
+                 <string>Duration</string>
+             </property>
+         </widget>
      </item>
+        <item>
+            <widget class="QLineEdit" name="editDuration">
+                <property name="toolTip">
+                    <string>Duration</string>
+                </property>
+                <property name="whatsThis">
+                    <string>Duration</string>
+                </property>
+            </widget>
+        </item>
      <item>
       <widget class="QPushButton" name="btnDuration">
        <property name="text">
@@ -36,11 +43,20 @@
     </layout>
    </item>
    <item>
-    <widget class="QProgressBar" name="progressBar">
-     <property name="value">
-      <number>24</number>
-     </property>
-    </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+               <layout class="QVBoxLayout" name="checkboxLayout"/>
+           </item>
+           <item>
+               <layout class="QVBoxLayout" name="labelLayout"/>
+           </item>
+       </layout>
+   </item>
+      <item>
+          <layout class="QGridLayout" name="lblGrid"/>
+      </item>
+      <item>
+          <layout class="QGridLayout" name="btnGrid"/>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -56,10 +72,25 @@
     </spacer>
    </item>
    <item>
-    <layout class="QGridLayout" name="lblGrid"/>
+       <widget class="QPushButton" name="btnBenchmark">
+           <property name="text">
+               <string>Benchmark</string>
+           </property>
+       </widget>
    </item>
    <item>
-    <layout class="QGridLayout" name="btnGrid"/>
+       <widget class="QPushButton" name="btnBenchAgain">
+           <property name="text">
+               <string>Benchmark</string>
+           </property>
+       </widget>
+   </item>
+      <item>
+          <widget class="QProgressBar" name="progressBar">
+              <property name="value">
+                  <number>24</number>
+              </property>
+          </widget>
    </item>
   </layout>
  </widget>
