@@ -159,6 +159,7 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
                 self.process.setProcessEnvironment(env)
 
             # Start the process with timer
+            print(self.binary)
             self.process.start(self.binary, self.make_param(self.current_algo))
             self.timer.start(self.duration)
 
@@ -241,6 +242,15 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
         result = ("-a " + algo + " " + self.params).split()
         print(result)
         return result
+
+    def closeEvent(self, q_close_event):
+        if self.timer.isActive():
+            self.timer.stop()
+            self.big_timer.stop()
+            self.process.kill()
+
+        print("closing the app")
+        q_close_event.accept()
 
 
 if __name__ == '__main__':
