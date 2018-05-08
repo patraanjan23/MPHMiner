@@ -3,7 +3,6 @@ import os
 import re
 import subprocess
 from time import sleep
-from pprint import pformat
 
 from api_parser import MPHProfitApi
 
@@ -107,14 +106,14 @@ class Benchmark:
                 raise FileNotFoundError
             if len(algorithms) > 0:
                 for algo in algorithms:
-                    if not os.path.exists(self.benchmark_dir + "/" + algo + ".txt"):
+                    if not os.path.exists(self.benchmark_dir + "\\" + algo + ".txt"):
                         self.start_benchmark_algo(algo)
 
             else:
                 with open(self.algorithms_file) as infile:
                     for algo in infile:
                         algo = algo.rstrip()
-                        if not os.path.exists(self.benchmark_dir + "/" + algo + ".txt"):
+                        if not os.path.exists(self.benchmark_dir + "\\" + algo + ".txt"):
                             self.start_benchmark_algo(algo)
 
             self.write_benchmarks()

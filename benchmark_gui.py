@@ -115,7 +115,7 @@ class Benchmarker(QtWidgets.QWidget, Ui_Form):
         self.setupUi(self)
         self.setMinimumSize(640, 480)
 
-        self.benchmark = Benchmark()
+        self.benchmark = Benchmark(binary="bin\ccminer_win.exe")
         self.benchmarks = []
         self.algorithms = []
 
@@ -158,7 +158,7 @@ class Benchmarker(QtWidgets.QWidget, Ui_Form):
                 self.algorithms.append(cb.text())
             elif not cb.isChecked() and cb.text() in self.algorithms:
                 self.algorithms.remove(cb.text())
-        # print(self.algorithms)
+        print(self.algorithms)
         pass
 
 

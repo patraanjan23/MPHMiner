@@ -243,6 +243,7 @@ class BenchmarkGui(QtWidgets.QWidget, Ui_Form):
         print(result)
         return result
 
+    # Closing event override for safely terminating ccminer
     def closeEvent(self, q_close_event):
         if self.timer.isActive():
             self.timer.stop()
